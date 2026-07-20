@@ -1,0 +1,5 @@
+# Opt-in: pip install -r requirements/notifications.txt once you have real
+# Firebase service-account credentials (see apps/notifications/services.py
+# and the FIREBASE_CREDENTIALS_PATH setting). Not installed by default.
+-r base.txt
+firebase-admin

@@ -1,4 +1,4 @@
-import { LayoutDashboard, Package, Tags } from 'lucide-react'
+import { LayoutDashboard, Package, Tags, Users } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 
 import {
@@ -17,6 +17,7 @@ const navItems = [
   { title: 'Dashboard', url: '/', icon: LayoutDashboard },
   { title: 'Products', url: '/products', icon: Package },
   { title: 'Categories', url: '/categories', icon: Tags },
+  { title: 'Customers', url: '/customers', icon: Users },
 ]
 
 export function AppSidebar() {

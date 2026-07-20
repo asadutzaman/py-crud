@@ -1,6 +1,3 @@
-asgiref==3.12.1
-Django==6.0.7
-djangorestframework==3.17.1
-psycopg2-binary==2.9.12
-python-dotenv==1.2.2
-sqlparse==0.5.5
+# Convenience pointer so `pip install -r requirements.txt` still works.
+# See requirements/ for the base/dev/prod/celery/notifications split.
+-r requirements/dev.txt

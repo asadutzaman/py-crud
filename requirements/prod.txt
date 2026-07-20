@@ -1,0 +1,2 @@
+-r celery.txt
+gunicorn==26.0.0

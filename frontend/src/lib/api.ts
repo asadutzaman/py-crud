@@ -49,7 +49,7 @@ export interface ProductStats {
   category_breakdown: CategoryBreakdown[]
 }
 
-const API_BASE = '/api'
+const API_BASE = '/api/v1'
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
@@ -82,6 +82,43 @@ export function updateProduct(id: number, input: ProductInput) {
 
 export function deleteProduct(id: number) {
   return request<void>(`/products/${id}/`, { method: 'DELETE' })
+}
+
+export interface Customer {
+  id: number
+  name: string
+  email: string
+  phone: string
+  address: string
+  notes: string
+  created_at: string
+  updated_at: string
+}
+
+export interface CustomerInput {
+  name: string
+  email: string
+  phone: string
+  address: string
+  notes: string
+}
+
+export function listCustomers(page = 1, search = '') {
+  const params = new URLSearchParams({ page: String(page) })
+  if (search) params.set('search', search)
+  return request<PaginatedResponse<Customer>>(`/customers/?${params}`)
+}
+
+export function createCustomer(input: CustomerInput) {
+  return request<Customer>('/customers/', { method: 'POST', body: JSON.stringify(input) })
+}
+
+export function updateCustomer(id: number, input: CustomerInput) {
+  return request<Customer>(`/customers/${id}/`, { method: 'PUT', body: JSON.stringify(input) })
+}
+
+export function deleteCustomer(id: number) {
+  return request<void>(`/customers/${id}/`, { method: 'DELETE' })
 }
 
 export function listCategories() {

@@ -15,12 +15,14 @@ const titles: Record<string, string> = {
   '/': 'Dashboard',
   '/products': 'Products',
   '/categories': 'Categories',
+  '/customers': 'Customers',
 }
 
 function currentTitle(pathname: string) {
   if (titles[pathname]) return titles[pathname]
   if (pathname.startsWith('/products')) return 'Products'
   if (pathname.startsWith('/categories')) return 'Categories'
+  if (pathname.startsWith('/customers')) return 'Customers'
   return 'Dashboard'
 }
 
