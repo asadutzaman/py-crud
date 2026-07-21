@@ -13,6 +13,7 @@ import {
 import { DeleteProductDialog } from '@/components/products/delete-product-dialog'
 import { ProductForm } from '@/components/products/product-form'
 import { ProductTable } from '@/components/products/product-table'
+import { usePermission } from '@/hooks/use-permission'
 import type { Product, ProductInput } from '@/lib/api'
 import {
   useCreateProduct,
@@ -27,6 +28,7 @@ export function ProductsPage() {
   const [isSheetOpen, setIsSheetOpen] = useState(false)
   const [deletingProduct, setDeletingProduct] = useState<Product | null>(null)
 
+  const permission = usePermission('products')
   const { data, isLoading } = useProducts(page)
   const createProduct = useCreateProduct()
   const updateProduct = useUpdateProduct()
@@ -83,10 +85,12 @@ export function ProductsPage() {
           <h1 className="text-lg font-semibold">Products</h1>
           <p className="text-sm text-muted-foreground">Manage your product catalog.</p>
         </div>
-        <Button onClick={openCreate}>
-          <Plus className="size-4" />
-          New Product
-        </Button>
+        {permission.canCreate && (
+          <Button onClick={openCreate}>
+            <Plus className="size-4" />
+            New Product
+          </Button>
+        )}
       </div>
 
       <Card>
@@ -94,6 +98,8 @@ export function ProductsPage() {
           <ProductTable
             products={data?.results ?? []}
             isLoading={isLoading}
+            canEdit={permission.canEdit}
+            canDelete={permission.canDelete}
             onEdit={openEdit}
             onDelete={setDeletingProduct}
           />

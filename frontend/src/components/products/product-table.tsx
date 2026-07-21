@@ -18,11 +18,22 @@ const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: '
 interface ProductTableProps {
   products: Product[]
   isLoading?: boolean
+  canEdit?: boolean
+  canDelete?: boolean
   onEdit: (product: Product) => void
   onDelete: (product: Product) => void
 }
 
-export function ProductTable({ products, isLoading, onEdit, onDelete }: ProductTableProps) {
+export function ProductTable({
+  products,
+  isLoading,
+  canEdit = true,
+  canDelete = true,
+  onEdit,
+  onDelete,
+}: ProductTableProps) {
+  const showActions = canEdit || canDelete
+
   return (
     <Table>
       <TableHeader>
@@ -32,7 +43,7 @@ export function ProductTable({ products, isLoading, onEdit, onDelete }: ProductT
           <TableHead>Price</TableHead>
           <TableHead>Quantity</TableHead>
           <TableHead>Updated</TableHead>
-          <TableHead className="text-right">Actions</TableHead>
+          {showActions && <TableHead className="text-right">Actions</TableHead>}
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -72,20 +83,26 @@ export function ProductTable({ products, isLoading, onEdit, onDelete }: ProductT
             <TableCell className="text-muted-foreground">
               {new Date(product.updated_at).toLocaleString()}
             </TableCell>
-            <TableCell className="text-right">
-              <Button variant="ghost" size="icon" onClick={() => onEdit(product)} aria-label="Edit">
-                <Pencil className="size-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => onDelete(product)}
-                aria-label="Delete"
-                className="text-destructive hover:text-destructive"
-              >
-                <Trash2 className="size-4" />
-              </Button>
-            </TableCell>
+            {showActions && (
+              <TableCell className="text-right">
+                {canEdit && (
+                  <Button variant="ghost" size="icon" onClick={() => onEdit(product)} aria-label="Edit">
+                    <Pencil className="size-4" />
+                  </Button>
+                )}
+                {canDelete && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onDelete(product)}
+                    aria-label="Delete"
+                    className="text-destructive hover:text-destructive"
+                  >
+                    <Trash2 className="size-4" />
+                  </Button>
+                )}
+              </TableCell>
+            )}
           </TableRow>
         ))}
       </TableBody>

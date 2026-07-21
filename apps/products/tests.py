@@ -4,12 +4,16 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from apps.accounts.models import User
+
 from .models import Category, Product
 
 
 class ProductApiTests(APITestCase):
     def setUp(self):
         self.category = Category.objects.create(name='Electronics')
+        user = User.objects.create_superuser(username='admin', email='admin@example.com', password='x')
+        self.client.force_authenticate(user=user)
 
     def test_list_products_empty(self):
         response = self.client.get(reverse('product-list'))
@@ -45,8 +49,17 @@ class ProductApiTests(APITestCase):
         self.assertEqual(breakdown['Electronics']['total_products'], 1)
         self.assertEqual(breakdown['Uncategorized']['total_products'], 1)
 
+    def test_anonymous_request_is_rejected(self):
+        self.client.force_authenticate(user=None)
+        response = self.client.get(reverse('product-list'))
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
 
 class CategoryApiTests(APITestCase):
+    def setUp(self):
+        user = User.objects.create_superuser(username='admin', email='admin@example.com', password='x')
+        self.client.force_authenticate(user=user)
+
     def test_product_count_reflects_assigned_products(self):
         category = Category.objects.create(name='Furniture')
         Product.objects.create(name='Chair', price='20.00', quantity=5, category=category)

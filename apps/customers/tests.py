@@ -2,10 +2,16 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from apps.accounts.models import User
+
 from .models import Customer
 
 
 class CustomerApiTests(APITestCase):
+    def setUp(self):
+        user = User.objects.create_superuser(username='admin', email='admin@example.com', password='x')
+        self.client.force_authenticate(user=user)
+
     def test_list_customers_empty(self):
         response = self.client.get(reverse('customer-list'))
         self.assertEqual(response.status_code, status.HTTP_200_OK)

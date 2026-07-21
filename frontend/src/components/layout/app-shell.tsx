@@ -1,6 +1,7 @@
 import { Outlet, useLocation } from 'react-router-dom'
 
 import { AppSidebar } from '@/components/layout/app-sidebar'
+import { UserMenu } from '@/components/layout/user-menu'
 import { ModeToggle } from '@/components/mode-toggle'
 import {
   Breadcrumb,
@@ -16,13 +17,15 @@ const titles: Record<string, string> = {
   '/products': 'Products',
   '/categories': 'Categories',
   '/customers': 'Customers',
+  '/users': 'Users',
+  '/roles': 'Roles',
 }
 
 function currentTitle(pathname: string) {
   if (titles[pathname]) return titles[pathname]
-  if (pathname.startsWith('/products')) return 'Products'
-  if (pathname.startsWith('/categories')) return 'Categories'
-  if (pathname.startsWith('/customers')) return 'Customers'
+  for (const [path, title] of Object.entries(titles)) {
+    if (path !== '/' && pathname.startsWith(path)) return title
+  }
   return 'Dashboard'
 }
 
@@ -43,8 +46,9 @@ export function AppShell() {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-1">
             <ModeToggle />
+            <UserMenu />
           </div>
         </header>
         <main className="flex flex-1 flex-col gap-4 p-4">

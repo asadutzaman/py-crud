@@ -1,5 +1,6 @@
 import { Pencil, Trash2 } from 'lucide-react'
 
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
@@ -10,35 +11,28 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import type { Customer } from '@/lib/api'
+import type { AppUser } from '@/lib/api'
 
-interface CustomerTableProps {
-  customers: Customer[]
+interface UserTableProps {
+  users: AppUser[]
   isLoading?: boolean
   canEdit?: boolean
   canDelete?: boolean
-  onEdit: (customer: Customer) => void
-  onDelete: (customer: Customer) => void
+  onEdit: (user: AppUser) => void
+  onDelete: (user: AppUser) => void
 }
 
-export function CustomerTable({
-  customers,
-  isLoading,
-  canEdit = true,
-  canDelete = true,
-  onEdit,
-  onDelete,
-}: CustomerTableProps) {
+export function UserTable({ users, isLoading, canEdit = true, canDelete = true, onEdit, onDelete }: UserTableProps) {
   const showActions = canEdit || canDelete
 
   return (
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Name</TableHead>
+          <TableHead>Username</TableHead>
           <TableHead>Email</TableHead>
-          <TableHead>Phone</TableHead>
-          <TableHead>Updated</TableHead>
+          <TableHead>Role</TableHead>
+          <TableHead>Status</TableHead>
           {showActions && <TableHead className="text-right">Actions</TableHead>}
         </TableRow>
       </TableHeader>
@@ -51,25 +45,31 @@ export function CustomerTable({
               </TableCell>
             </TableRow>
           ))}
-        {!isLoading && customers.length === 0 && (
+        {!isLoading && users.length === 0 && (
           <TableRow>
             <TableCell colSpan={5} className="text-center text-muted-foreground">
-              No customers yet. Create the first one.
+              No users yet. Create the first one.
             </TableCell>
           </TableRow>
         )}
-        {customers.map((customer) => (
-          <TableRow key={customer.id}>
-            <TableCell className="font-medium">{customer.name}</TableCell>
-            <TableCell>{customer.email}</TableCell>
-            <TableCell className="text-muted-foreground">{customer.phone || '—'}</TableCell>
-            <TableCell className="text-muted-foreground">
-              {new Date(customer.updated_at).toLocaleString()}
+        {users.map((user) => (
+          <TableRow key={user.id}>
+            <TableCell className="font-medium">{user.username}</TableCell>
+            <TableCell>{user.email}</TableCell>
+            <TableCell>
+              {user.role ? <Badge variant="secondary">{user.role.name}</Badge> : <span className="text-muted-foreground">—</span>}
+            </TableCell>
+            <TableCell>
+              {user.is_active ? (
+                <Badge variant="secondary">Active</Badge>
+              ) : (
+                <Badge variant="destructive">Inactive</Badge>
+              )}
             </TableCell>
             {showActions && (
               <TableCell className="text-right">
                 {canEdit && (
-                  <Button variant="ghost" size="icon" onClick={() => onEdit(customer)} aria-label="Edit">
+                  <Button variant="ghost" size="icon" onClick={() => onEdit(user)} aria-label="Edit">
                     <Pencil className="size-4" />
                   </Button>
                 )}
@@ -77,7 +77,7 @@ export function CustomerTable({
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => onDelete(customer)}
+                    onClick={() => onDelete(user)}
                     aria-label="Delete"
                     className="text-destructive hover:text-destructive"
                   >

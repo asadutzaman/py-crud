@@ -3,3 +3,6 @@ Backend run
 
 Frontend run
 npm run dev
+
+Reset password
+./venv/bin/python manage.py changepassword admin

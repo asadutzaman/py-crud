@@ -8,6 +8,7 @@ import { DeleteCategoryDialog } from '@/components/categories/delete-category-di
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
+import { usePermission } from '@/hooks/use-permission'
 import type { Category, CategoryInput } from '@/lib/api'
 import {
   useCategories,
@@ -21,6 +22,7 @@ export function CategoriesPage() {
   const [isSheetOpen, setIsSheetOpen] = useState(false)
   const [deletingCategory, setDeletingCategory] = useState<Category | null>(null)
 
+  const permission = usePermission('categories')
   const { data: categories, isLoading } = useCategories()
   const createCategory = useCreateCategory()
   const updateCategory = useUpdateCategory()
@@ -77,10 +79,12 @@ export function CategoriesPage() {
           <h1 className="text-lg font-semibold">Categories</h1>
           <p className="text-sm text-muted-foreground">Organize your products into categories.</p>
         </div>
-        <Button onClick={openCreate}>
-          <Plus className="size-4" />
-          New Category
-        </Button>
+        {permission.canCreate && (
+          <Button onClick={openCreate}>
+            <Plus className="size-4" />
+            New Category
+          </Button>
+        )}
       </div>
 
       <Card>
@@ -88,6 +92,8 @@ export function CategoriesPage() {
           <CategoryTable
             categories={categories ?? []}
             isLoading={isLoading}
+            canEdit={permission.canEdit}
+            canDelete={permission.canDelete}
             onEdit={openEdit}
             onDelete={setDeletingCategory}
           />

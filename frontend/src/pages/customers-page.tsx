@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
+import { usePermission } from '@/hooks/use-permission'
 import type { Customer, CustomerInput } from '@/lib/api'
 import {
   useCreateCustomer,
@@ -24,6 +25,7 @@ export function CustomersPage() {
   const [isSheetOpen, setIsSheetOpen] = useState(false)
   const [deletingCustomer, setDeletingCustomer] = useState<Customer | null>(null)
 
+  const permission = usePermission('customers')
   const { data, isLoading } = useCustomers(page, search)
   const createCustomer = useCreateCustomer()
   const updateCustomer = useUpdateCustomer()
@@ -80,10 +82,12 @@ export function CustomersPage() {
           <h1 className="text-lg font-semibold">Customers</h1>
           <p className="text-sm text-muted-foreground">Manage your customer directory.</p>
         </div>
-        <Button onClick={openCreate}>
-          <Plus className="size-4" />
-          New Customer
-        </Button>
+        {permission.canCreate && (
+          <Button onClick={openCreate}>
+            <Plus className="size-4" />
+            New Customer
+          </Button>
+        )}
       </div>
 
       <div className="relative max-w-sm">
@@ -101,6 +105,8 @@ export function CustomersPage() {
           <CustomerTable
             customers={data?.results ?? []}
             isLoading={isLoading}
+            canEdit={permission.canEdit}
+            canDelete={permission.canDelete}
             onEdit={openEdit}
             onDelete={setDeletingCustomer}
           />

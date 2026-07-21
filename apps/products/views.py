@@ -1,7 +1,10 @@
 from django.db.models import Count, F, Q, Sum
 from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+
+from apps.accounts.permissions import HasMenuPermission
 
 from .models import Category, Product
 from .serializers import CategorySerializer, ProductSerializer
@@ -13,11 +16,15 @@ class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.annotate(product_count=Count('products'))
     serializer_class = CategorySerializer
     pagination_class = None
+    permission_classes = [IsAuthenticated, HasMenuPermission]
+    menu_key = 'categories'
 
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.select_related('category').all()
     serializer_class = ProductSerializer
+    permission_classes = [IsAuthenticated, HasMenuPermission]
+    menu_key = 'products'
 
     @action(detail=False, methods=['get'])
     def stats(self, request):

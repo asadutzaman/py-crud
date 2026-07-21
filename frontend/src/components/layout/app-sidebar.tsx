@@ -1,4 +1,12 @@
-import { LayoutDashboard, Package, Tags, Users } from 'lucide-react'
+import {
+  LayoutDashboard,
+  Package,
+  ShieldCheck,
+  Tags,
+  UserCog,
+  Users,
+  type LucideIcon,
+} from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 
 import {
@@ -12,15 +20,21 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
+import { useAuth } from '@/contexts/auth-context'
 
-const navItems = [
-  { title: 'Dashboard', url: '/', icon: LayoutDashboard },
-  { title: 'Products', url: '/products', icon: Package },
-  { title: 'Categories', url: '/categories', icon: Tags },
-  { title: 'Customers', url: '/customers', icon: Users },
-]
+const ICONS: Record<string, LucideIcon> = {
+  LayoutDashboard,
+  Package,
+  Tags,
+  Users,
+  UserCog,
+  ShieldCheck,
+}
 
 export function AppSidebar() {
+  const { user } = useAuth()
+  const visibleMenus = (user?.permissions ?? []).filter((p) => p.can_view)
+
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
@@ -36,22 +50,25 @@ export function AppSidebar() {
           <SidebarGroupLabel>Overview</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild tooltip={item.title}>
-                    <NavLink
-                      to={item.url}
-                      end={item.url === '/'}
-                      className={({ isActive }) =>
-                        isActive ? 'font-medium text-sidebar-accent-foreground' : ''
-                      }
-                    >
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {visibleMenus.map((menu) => {
+                const Icon = ICONS[menu.icon] ?? Package
+                return (
+                  <SidebarMenuItem key={menu.menu_key}>
+                    <SidebarMenuButton asChild tooltip={menu.menu_label}>
+                      <NavLink
+                        to={menu.path}
+                        end={menu.path === '/'}
+                        className={({ isActive }) =>
+                          isActive ? 'font-medium text-sidebar-accent-foreground' : ''
+                        }
+                      >
+                        <Icon />
+                        <span>{menu.menu_label}</span>
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
